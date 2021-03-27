@@ -1,0 +1,1233 @@
+<html>
+  <head>
+  <title>
+    Статья на Habr
+  </title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+<style>
+      body {
+                font-family: 'Roboto', serif;
+                                  }
+          </style>
+
+  </head>
+  <body>
+    <h1>YAHW на React</h1>
+    Да, это еще один хелло-ворлд на React, которых уже много на сети. Зачем еще один? 
+    Здесь я попытался рассказать о создании простого приложения так, как хотел бы прочитать об этом в то время когда делал первые шаги на React, т.е стовсем недавно. Обратить внимание на то, что мне нужно было узнать сначала.
+Надеюсь начинающим пригодится, а продолжающие дадут свои замечания.
+<h4>Поехали?</h4>
+
+<h2>Создание первого приложения</h2>
+<p>
+Здесь все максимально просто, как это часто бывает с созданием хелловорлдов. Все (почти) сделают за нас.
+</p>
+<p>
+Перед тем как начать убеждаемся в том, что у нас есть необходимый инструментарий.
+</p>
+<code>
+<pre>
+  node --version 
+  v10.24.0 
+
+  npm --version
+  6.14.11
+  
+  npx --version
+  10.2.2
+
+</pre>
+</code>
+<p>
+Собственно создание приложения выполняется простой командой
+</p>
+<code>
+  <pre>
+    npx create-react-app hw-app 
+  </pre>
+</code>
+<p>где <code>hw-app</code> (helloworld-application) -- имя приложения.</p>
+  <p>
+  В текущей папке будет создана папка с именем hw-app, содержащая все необходимое для запуска React приложения. Чтобы проверить его работу нужно зайти внутрь (<code>cd hw-app</code>) и запустить приложение.
+  </p>
+
+  <code>npm start</code>
+    <p>
+    Результатом работы команды будет являться не только текст на экране <br/>
+    <code>
+      <pre>
+    Compiled successfully!
+
+    You can now view hw-app in the browser.
+
+    http://localhost:3000
+
+    Note that the development build is not optimized.
+    To create a production build, use npm run build.
+</pre>
+    </code>
+    <br/>
+
+    но и возможность проверить его правдивость. </p>
+    <p>Нацелим свой браузер на указанный адрес и увидим работающее приложение.</p>
+
+    <img src='./images/first_app.png' style='border: solid 1px;' />
+
+<p>
+Что бы остановить приложение (если захотим) нажмем <code>Ctr-C</code>.
+Посмотрим на содержимое папки приложения-проекта.
+<code>
+  <pre>
+ls
+README.md  node_modules  package-lock.json  package.json  public  src
+  </pre>
+</code>
+</p>
+На данном этапе нас будут интересовать папки public и src.
+
+<code>
+  <pre>
+    ls public
+    favicon.ico  index.html  logo192.png  logo512.png  manifest.json  robots.txt
+
+    ls src
+    App.css  App.js  App.test.js  index.css  index.js  logo.svg  reportWebVitals.js  setupTests.js
+  </pre>
+</code>
+
+<p>
+В папке public лежит <code>index.html</code>, который и будет отдаваться dev-сервером в ответ на запрос браузера.
+</p>
+<p>
+В свою очередь в <code>index.html</code> есть <code>div</code> элемент с <code>id='root'</code>, в который React "отрисует" приложение, как это указано в файле <code>src/index.js</code>
+
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;ReactDOM.<font color="#660066">render</font><font color="#009900">&#40;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>React.<font color="#660066">StrictMode</font><font color="#339933">&gt;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>App&nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>React.<font color="#660066">StrictMode</font><font color="#339933">&gt;,</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.<font color="#660066">getElementById</font><font color="#009900">&#40;</font><font color="#3366CC">'root'</font><font color="#009900">&#41;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;</blockquote>
+<!--
+<code>
+  <pre>
+    ReactDOM.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+      document.getElementById('root')
+    );
+  </pre>
+</code>
+-->
+и отрисует он там компонент <code>App</code>.
+
+Чтобы рассмотреть немного ближе, как это работает изменим файлы <code>index.html</code> и <code>App.js</code>.
+</p>
+
+Пусть браузeр в заголовке показывает название именно нашего приложения. Изменим соответствующую строку
+было 
+<blockquote><font color="#009900">&lt;<font color="#000000">title</font>&gt;</font>React&nbsp;App<font color="#009900">&lt;<font color="#66cc66">/</font><font color="#000000">title</font>&gt;</font><br/>
+  &nbsp;</blockquote>
+
+<!--       <title>React App</title> -->
+
+стало 
+<blockquote><font color="#009900">&lt;<font color="#000000">title</font>&gt;</font>My&nbsp;First&nbsp;React&nbsp;App<font color="#009900">&lt;<font color="#66cc66">/</font><font color="#000000">title</font>&gt;</font></blockquote>
+
+<!--       <title>My First React App</title> -->
+
+А компонент App пусть покажет наш контент (содержимое файла <code>App.js</code>) было:
+<!--
+    import logo from './logo.svg';
+    import './App.css';
+
+    function App() {
+      return (
+          <div className="App">
+            <header className="App-header">
+              <img src={logo} className="App-logo" alt="logo" />
+              <p>
+                Edit <code>src/App.js</code> and save to reload.
+              </p>
+              <a
+                className="App-link"
+                href="https://reactjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn React
+              </a>
+            </header>
+        </div>
+     );
+   }
+
+export default App;
+-->
+
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;logo&nbsp;from&nbsp;<font color="#3366CC">'./logo.svg'</font><font color="#339933">;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;<font color="#3366CC">'./App.css'</font><font color="#339933">;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">function</font>&nbsp;App<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div&nbsp;className<font color="#339933">=</font><font color="#3366CC">&quot;App&quot;</font><font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>header&nbsp;className<font color="#339933">=</font><font color="#3366CC">&quot;App-header&quot;</font><font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>img&nbsp;src<font color="#339933">=</font><font color="#009900">&#123;</font>logo<font color="#009900">&#125;</font>&nbsp;className<font color="#339933">=</font><font color="#3366CC">&quot;App-logo&quot;</font>&nbsp;alt<font color="#339933">=</font><font color="#3366CC">&quot;logo&quot;</font>&nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Edit&nbsp;<font color="#339933">&lt;</font>code<font color="#339933">&gt;</font>src<font color="#339933">/</font>App.<font color="#660066">js</font><font color="#339933">&lt;/</font>code<font color="#339933">&gt;</font>&nbsp;and&nbsp;save&nbsp;to&nbsp;reload.<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>a<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;className<font color="#339933">=</font><font color="#3366CC">&quot;App-link&quot;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href<font color="#339933">=</font><font color="#3366CC">&quot;https://reactjs.org&quot;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target<font color="#339933">=</font><font color="#3366CC">&quot;_blank&quot;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rel<font color="#339933">=</font><font color="#3366CC">&quot;noopener&nbsp;noreferrer&quot;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Learn&nbsp;React<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>a<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>header<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;</blockquote>
+
+стало:
+<blockquote>&nbsp;&nbsp;<font color="#000066">function</font>&nbsp;App<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>h1<font color="#339933">&gt;</font>Hello&nbsp;React<font color="#339933">!&lt;/</font>h1<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;App<font color="#339933">;</font><br/>
+  &nbsp;<br/>
+  &nbsp;</blockquote>
+<!--
+  function App() {
+    return (
+      <div>
+        <h1>Hello React!</h1>
+      </div>
+    );
+  }
+  export default App;
+-->
+также из папки src можно удалить все неиспользуемые файлы в данный момент файлы. Содержимое папки должно быть таким<code>
+  <pre>
+
+  ls src/
+  App.js index.js
+  </pre>
+</code>
+По необходимости мы будем добавлять нужные файлы сами и узнаем зачем мы это делаем. А пока посмотрим на результат.
+</p>
+
+<img style='border: solid 1px;'src='./images/hello_react.png'/>
+<p>
+Выглядит как настоящий HelloWorld, но останавливаться мы на этом не будем и рассмотрим простые случаи взаимодействия с пользователем, чтобы наш "Hello" не улетел в пустоту. </p>
+<p>
+В React мы работаем с компонентами. В данном и самом простом случае компонент - это функция написанная на JavaScript и возвращающая код, похожий на разметку <code>html</code>. Похожий, но являющийся на деле кодом <code>JSX</code> из которого <code>html</code> получается в результате компиляции.
+Мы не будем вносить изменения в файл <code>App.js</code> пусть он остается корневым компонентом нашего в будущем интерактивного приложения, в котором мы расположим написанные нами компоненты.
+<p>
+Не забудем убрать лишние строки из <code>src/index.js</code>, он примет вид </p>
+</p>
+<!--
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+    import App from './App';
+
+    ReactDOM.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+      document.getElementById('root')
+    );
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;React&nbsp;from&nbsp;<font color="#3366CC">'react'</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;ReactDOM&nbsp;from&nbsp;<font color="#3366CC">'react-dom'</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;App&nbsp;from&nbsp;<font color="#3366CC">'./App'</font><font color="#339933">;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;ReactDOM.<font color="#660066">render</font><font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>React.<font color="#660066">StrictMode</font><font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>App&nbsp;<font color="#339933">/&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>React.<font color="#660066">StrictMode</font><font color="#339933">&gt;,</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.<font color="#660066">getElementById</font><font color="#009900">&#40;</font><font color="#3366CC">'root'</font><font color="#009900">&#41;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;<br/>
+&nbsp;<br/>
+&nbsp;</blockquote>
+
+<p>Следует сказать, что компоненты могут быть функциональными -- просто функция, возвращающая представление компонента и "классовыми" -- это компонент описываемый JS классом, имеющий внутреннее состояние и дополнительный функционал.
+</p>
+<p>
+Сказанное не означает, что функциональные компоненты не могут иметь внутреннего состояния, но об этом позже.
+</p>
+
+<p>Добавим в наше приложение два компонента, один функциональный и один в виде класса. Оба будут иметь состояния, что-то о себе помнить и взаимодействовать с пользователем.
+</p>
+<p>
+Первый компонент, назовем его <code>ClickCounter</code>, будет считать сколько раз по нему кликнули.
+Второй - <code>Machine</code> будет представлять собой интерфейс с какой-то машине, которую можно включать выключать, нажамая на кнопку.
+</p>
+<h2>ClickCounter -- функция.</h2>
+<p>
+Первая итерация. Это содержимое файла <code>ClickCounter.js</code> </p>
+<!--
+    const clickCounter = () => {
+      const clickTimes = 0;
+      return (
+        <div>
+          <p>Я счетчик кликов</p>
+          <p>Кликнуто {clickTimes} раз</p>
+        </div>
+      );
+    }
+    export default clickCounter;
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;clickCounter&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;clickTimes&nbsp;<font color="#339933">=</font>&nbsp;<font color="#CC0000">0</font><font color="#339933">;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Я&nbsp;счетчик&nbsp;кликов<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Кликнуто&nbsp;<font color="#009900">&#123;</font>clickTimes<font color="#009900">&#125;</font>&nbsp;раз<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font>&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;clickCounter<font color="#339933">;</font><br/>
+  &nbsp;</blockquote>
+<p>
+А вот так изменился <code>App.js</code>.
+</p>
+<!--
+    import ClickCounter from './ClickCounter';
+
+    function App() {
+      return (
+        <div>
+        <h1>Hello React!</h1>
+        <ClickCounter />
+        </div>
+      );
+    }
+    export default App;
+
+  -->
+  <blockquote>&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;ClickCounter&nbsp;from&nbsp;<font color="#3366CC">'./ClickCounter'</font><font color="#339933">;</font><br/>
+    &nbsp;<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">function</font>&nbsp;App<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div<font color="#339933">&gt;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>h1<font color="#339933">&gt;</font>Hello&nbsp;React<font color="#339933">!&lt;/</font>h1<font color="#339933">&gt;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>ClickCounter&nbsp;<font color="#339933">/&gt;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;App<font color="#339933">;</font><br/>
+    &nbsp;</blockquote>
+  <p>
+  В первой строке импортируем наш <code>ClickCounter</code> и добавляем его в отрисовку после тега "Hello React!". И да, новый компонет будет выглядеть в коде как еще один новый тэг. Тут наверное может возникнуть вопрос об именовании компонентов, в файле <code>ClickCounter.js</code> экспортируем <code>clickCounter</code>, в <code>App.js</code> импортируем <code>ClickCounter</code>, что за дела?
+  </p>
+  <p>
+  Мы можем импортировать хоть <code>MySupperPupperClickCounter</code> из <code>'./ClickCounter'</code> и использовать его как<code> &ltMySupperPupperClickCounter /&gt </code>, но получим все равно вывод функции clickCounter(), которая экспортируется по дефолту. (попробуйте)
+</p>
+<p>
+Итого: после слова <code>import</code> стоит имя компонента которое мы будем использовать далее в файле (в данном случае в файле App.js) после слова from стоит имя файла с относительным путем, но без расширения <code>'.js'</code>.
+</p>
+<p>
+Что же написано  в <code>СlickCounter.js</code>? Определена константа с имененем <code>clickCounter</code>, которой присваивается <code>'='</code>  функция без параметров <code>'()'</code> выполняющая код написанный в теле <code>'{}'</code>, там же определяется переменная <code>clickTimes</code>. Значение этой переменной будет появляться в строке 
+<!-- <p>Кликнуто {clickTimes} раз</p> -->
+<blockquote><font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Кликнуто&nbsp;<font color="#009900">&#123;</font>clickTimes<font color="#009900">&#125;</font>&nbsp;раз<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;</blockquote>
+
+где имя переменной обернуто в фигурные скобки. Помним, что это <code>JSX</code> и после компиляции мы увидим <code>"Кликнуто 0 раз"</code> как на рисунке. 
+</p>
+<img src='./images/click_counter.png' style='border: solid 1px;' />
+
+<p>
+Пока еще ничего инресного не происходит, т.к. не самого подсчета кликов. Раелизуем его.
+https://ru.reactjs.org/docs/hooks-state.html -- здесь очень подробно и хорошо описана работа с хуками состояния.
+Я может быть немного повторю, но еще раз про строку
+<code>
+  <pre>
+  const [clickTimes, clickIncrement] = useState(0)
+  </pre>
+</code>
+<code>useState(0)</code> -- принимает в качестве параметра инициирующее значение для переменной состояния clickTimes его же и возвращает как первый элемнт массива.<br/>
+<code>clickUpdater</code> -- функция, которая будет обновлять значение переменной состояния своим параметром.
+</p>
+<p>
+Я вынес логику в функцию <code>clickIncrementeri()</code>, чтобы показать, что сложную логику (в нашем случае она, конечно, простая) можно описать в отдельной функции и вернуть состояние оттуда.
+
+Таким образом файл <code>ClickCounter.js</code> становится таким:
+</p>
+<!--
+    import React, { useState } from 'react';
+
+    const ClickCounter = () => {
+      const [clickTimes, clickUpdater] = useState(0);
+
+      const clickIncrementer = () => { 
+        return clickTimes + 1;
+      }
+      
+      return (
+        <div onClick={ () => clickUpdater(clickIncrementer)}>
+          <p>Я счетчик кликов</p>
+          <p>Кликнуто {clickTimes} раз</p>
+        </div>
+      );
+    }
+    export default ClickCounter;
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;React<font color="#339933">,</font>&nbsp;<font color="#009900">&#123;</font>&nbsp;useState&nbsp;<font color="#009900">&#125;</font>&nbsp;from&nbsp;<font color="#3366CC">'react'</font><font color="#339933">;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;ClickCounter&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;<font color="#009900">&#91;</font>clickTimes<font color="#339933">,</font>&nbsp;clickUpdater<font color="#009900">&#93;</font>&nbsp;<font color="#339933">=</font>&nbsp;useState<font color="#009900">&#40;</font><font color="#CC0000">0</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;clickIncrementer&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font>&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;clickTimes&nbsp;<font color="#339933">+</font>&nbsp;<font color="#CC0000">1</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div&nbsp;onClick<font color="#339933">=</font><font color="#009900">&#123;</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;clickUpdater<font color="#009900">&#40;</font>clickIncrementer<font color="#009900">&#41;</font><font color="#009900">&#125;</font><font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Я&nbsp;счетчик&nbsp;кликов<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Кликнуто&nbsp;<font color="#009900">&#123;</font>clickTimes<font color="#009900">&#125;</font>&nbsp;раз<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;ClickCounter<font color="#339933">;</font><br/>
+  &nbsp;<br/>
+  &nbsp;</blockquote>
+
+<p>
+Обратите внимание, ClickCounter мы теперь пишем с большой буквы -- это требование к именованию функциональных компонентов, использующих хуки.Теперь, кликая по тексту элемента будем наблюдать возрастающее число кликов.
+</p>
+
+<h2>Machine -- class.</h2>
+<p>
+Поехали дальше. На очереди компонент класс.
+Назовем этот класс <code>Machine</code> и опишем в файле <code>Machine.js</code>.
+Класс компонента обязан реализовать функцию <code>render()</code>, которая будет вызываться для отображения компонента в браузере. Сначала просто нарисуем нужные нам элементы с нужными значениями. Вот полный текст файла.
+</p>
+<!--
+    import React from 'react';
+
+    class Machine extends React.Component {
+
+      state = {
+        machineState: 'STOPPED',
+        machineStarted: 0
+      }
+
+      render () {
+        return (      
+          <div>
+            <p>Я интерфейс машины.</p>
+            <p>Состояние машины: {this.state.machineState}. 
+              <br/>
+              <button onClick={this.clickButtonHandler}>{this.state.buttonLabel}</button>
+            </p>
+            Машину запускали {this.state.machineStartCount} раз.
+          </div>
+        );
+      }
+    }
+
+    export default Machine;
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;React&nbsp;from&nbsp;<font color="#3366CC">'react'</font><font color="#339933">;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">class</font>&nbsp;Machine&nbsp;<font color="#FF0000">extends</font>&nbsp;React.<font color="#660066">Component</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;state&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;machineState<font color="#339933">:</font>&nbsp;<font color="#3366CC">'STOPPED'</font><font color="#339933">,</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;machineStarted<font color="#339933">:</font>&nbsp;<font color="#CC0000">0</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;render&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Я&nbsp;интерфейс&nbsp;машины.<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Состояние&nbsp;машины<font color="#339933">:</font>&nbsp;<font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">machineState</font><font color="#009900">&#125;</font>.&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>br<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>button&nbsp;onClick<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">clickButtonHandler</font><font color="#009900">&#125;</font><font color="#339933">&gt;</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">buttonLabel</font><font color="#009900">&#125;</font><font color="#339933">&lt;/</font>button<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Машину&nbsp;запускали&nbsp;<font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">machineStartCount</font><font color="#009900">&#125;</font>&nbsp;раз.<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;Machine<font color="#339933">;</font><br/>
+  &nbsp;</blockquote>
+Как видим, <code>render()</code> возвращает не что иное, как <code>JS</code> код, и весь этот код должен быть обрамлен одним <code>&ltdiv&gt</code>, для функционального компонента требование то же.
+
+В файл <code>App.js</code> добавим строку для импорта 
+<code>
+  <pre>
+    import Machine from './Machine';
+  </pre>
+</code>
+
+и строку для отображения
+<code>
+  <pre>
+    &ltMachine /&gt
+  </pre>
+</code>
+
+Полный текст файла
+
+<!--
+    import ClickCounter from './ClickCounter';
+    import Machine from './Machine';
+
+    function App() {
+      return (
+        <div>
+        <h1>Hello React!</h1>
+        <ClickCounter />
+        <Machine />
+        </div>
+      );
+    }
+    export default App;
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;ClickCounter&nbsp;from&nbsp;<font color="#3366CC">'./ClickCounter'</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">import</font>&nbsp;Machine&nbsp;from&nbsp;<font color="#3366CC">'./Machine'</font><font color="#339933">;</font><br/>
+  &nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">function</font>&nbsp;App<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>h1<font color="#339933">&gt;</font>Hello&nbsp;React<font color="#339933">!&lt;/</font>h1<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>ClickCounter&nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>Machine&nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;App<font color="#339933">;</font></blockquote>
+<p>Что увидим в браузере показано на рисунке. Пока, конечно -- каша. Но совсем скоро мы ее поправим (намаслим?).</p>
+<img src='./images/one_machine_no_style.png' style='border solid 1px' />
+<p>
+А пока обсудим содержимое файла <code>Machine.js</code>. В первой строке <code>import React</code>. Обратите внимание, мы не использовали никаких выражений в фигурных скобках. Именно поэтому мы пишем <code>extends React.Component</code>. Если бы написали <code>import React, { Component } from 'react'</code> , то можно было бы сказать <code>extends Component</code>.
+</p>
+<p>
+Далее, появилось объявление и инциализация объекта <code>state</code>. Именнно в нем будет храниться изменяемая информация (состояние), связання с объектом класса.
+Обращаться к этому объекту нужно с использованием указателя <code>this</code>. Понятное дело, что объект <code>state</code> может быть объемнее и сложнее, чем в нашем случае. 
+</p>
+<p>
+Теперь у нас есть привязанное к компоненту состояние, которое нужно менять в зависимости от действия пользователя. Дествий не много -- нажатие кнопки. В зависимости от того, в каком состоянии находилась машина в момент нажатия кнопки мы изменим состояние таким образом:
+<pre>
+    Состояние машины -- STOPPED, на кнопке написано START.
+    Состояние машины -- STARTED, на кнопке написано STOP.
+    Счетчик стартов будет считать количество нажатий на кнопку с надписью START.
+</pre>
+
+При работе с состоянием <code>state</code> надо знать, изменять состояние нужно только специальной фнукцией <code>setState()</code>, при этом фактически будет созано и сохранено новое состояние с новыми значениями. Попробуем на практике, при нажатии на кнопку поменяем соответствующие надписи. Для этого напишем функцию <code>clickButtonHandler</code>. 
+</p>
+<!--
+    clickButtonHandler = () => {
+      switch (this.state.machineState) {
+        case 'STOPPED':
+          const cnt = this.state.machineStartCount;
+          this.setState({machineState: 'STARTED', 
+            buttonLabel: 'STOP',
+            machineStartCount: cnt + 1});
+          break;
+        case 'STARTED':
+          this.setState({machineState: 'STOPPED', 
+            buttonLabel: 'START'});
+          break;
+        default:
+          break;
+      }
+    }
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;clickButtonHandler&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">switch</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">machineState</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'STOPPED'</font><font color="#339933">:</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;cnt&nbsp;<font color="#339933">=</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">machineStartCount</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">setState</font><font color="#009900">&#40;</font><font color="#009900">&#123;</font>machineState<font color="#339933">:</font>&nbsp;<font color="#3366CC">'STARTED'</font><font color="#339933">,</font>&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buttonLabel<font color="#339933">:</font>&nbsp;<font color="#3366CC">'STOP'</font><font color="#339933">,</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;machineStartCount<font color="#339933">:</font>&nbsp;cnt&nbsp;<font color="#339933">+</font>&nbsp;<font color="#CC0000">1</font><font color="#009900">&#125;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'STARTED'</font><font color="#339933">:</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">setState</font><font color="#009900">&#40;</font><font color="#009900">&#123;</font>machineState<font color="#339933">:</font>&nbsp;<font color="#3366CC">'STOPPED'</font><font color="#339933">,</font>&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buttonLabel<font color="#339933">:</font>&nbsp;<font color="#3366CC">'START'</font><font color="#009900">&#125;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">default</font><font color="#339933">:</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;</blockquote>
+<p>
+Код простой и пояснений не требует, кроме наверное одного нюанса (я на этом застрял). Речь идет о наличии константы <code>const cnt = this.state.machineStartCount</code>. Почему бы не написать просто <code>machineStartCount: this.state.machineStartCount + 1</code>? Нельзя. Нельзя использовать непостредственно состояние компонента для создания нового состояния. Просто.
+Также нужно обратить внимание, что в одном случае мы создаем полностью новое состояние, а вдругом, только только его части, не обновляем значение счетчика. <code>setState()</code> правильно обработает ситуацию, она обновит указанные поля и оставит не тронутыми те, о которых умолчали.
+</p>
+Теперь добавим эту функци в обработчик клика для кнопки.
+<!--
+    <button onClick={this.clickButtonHandler}>{this.state.buttonLabel}</button>
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>button&nbsp;onClick<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">clickButtonHandler</font><font color="#009900">&#125;</font><font color="#339933">&gt;</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">buttonLabel</font><font color="#009900">&#125;</font><font color="#339933">&lt;/</font>button<font color="#339933">&gt;</font><br/>
+  &nbsp;</blockquote>
+
+Все работает, но выглядит все еще так себе.
+
+<h2>Добавим стиля.</h2>
+<p>
+Громко сказано, просто отделим компоненты друг от друга и покажем их границы. Все описание запишем в файл <code>src/App.css</code> и импортируем его в <code>src/App.js</code> строкой
+</p>
+<!--
+import './App.css';
+-->
+<blockquote><font color="#FF0000">import</font>&nbsp;<font color="#3366CC">'./App.css'</font><font color="#339933">;</font></blockquote>
+<p>
+  А это содержимое файла <code>App.css</code> :
+  <code>
+    <pre>
+    .Component {
+      margin: 20px;
+      border: 1px solid #eee;
+      box-shadow: 5px 5px 10px #ccc;
+      padding: 10px;
+    }
+    </pre>
+  </code>
+</p>
+
+<p>
+Чтобы применить стиль к компоненту надо в тэге <code>div</code> добавить <code>className</code> вот так:
+</p>
+
+<code>
+  <pre>
+    &ltdiv className='Component'&gt
+  </pre>
+</code>
+Посмотрим, что получилось.
+</p>
+<img src='./images/one_machine_styled.gif' style='border: solid 1px' />
+
+<p>
+
+<h2>"Пропсы"</h2>
+<p>
+  Не могу понять, почему не использовать 'свойства' или 'параметры', ведь очень похоже на передачу параметров при создании компонента. Может быть, при создании нового сообщества React-истов(еров) потребовался новый слэнг? В общем, следуем офциальному сайту.
+</p>
+
+<p>
+Мы рассмотрели <code>state</code> - структуру, которая хранит информацию о компоненте и которую мы можем изменять
+в жизненном цикле компоненташ, изменения инициируются компонентом. Теперь мы рассмотрим <code>props</code>. 
+Это данные, которые родитель компонента может передать дочернему компоненту. 
+"Пропсы" (вроде как устоявшийся термин)  не изменяются в течение срока жизни компонента самим компонентом, для него это "константы", но которые компонент может прочитать. Поcмотрим как это работает.
+</p>
+<p>
+Представим себе, что нам нужно создать две машины, два компонента <code>Machine</code>, которые будут отличаться именем-обозначением, в остальном экземпляры компонента будут одинаковы. Добавим дополнительную информацию с использованием <code>props</code>. 
+Создадим в <code>App</code>  две машины с именами "Первая машина" и "Вторая машина" следующим образом
+<!--
+    <Machine name='Первая машина' />
+    <Machine name='Вторая машина' />
+-->
+<blockquote>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>Machine&nbsp;name<font color="#339933">=</font><font color="#3366CC">'Первая&nbsp;машина'</font>&nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>Machine&nbsp;name<font color="#339933">=</font><font color="#3366CC">'Вторая&nbsp;машина'</font>&nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;<br/>
+  &nbsp;<br/>
+  &nbsp;</blockquote>
+
+<code>name</code> и будет тем самым пропсом.
+Теперь изменим функцию <code>render()</code>  компонента.
+<!--
+  render () {
+    return (
+      <div className='Component'>
+        {this.props.name}
+        <p>Я интерфейс машины.</p>
+        <p>Состояние машины: {this.state.machineState}. 
+          <br/>
+          <button onClick={this.clickButtonHandler}>{this.state.buttonLabel}</button>
+        </p>
+        Машину запускали {this.state.machineStartCount} раз.
+      </div>
+    );
+  }
+-->
+<blockquote>&nbsp;&nbsp;render&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div&nbsp;className<font color="#339933">=</font><font color="#3366CC">'Component'</font><font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">name</font><font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Я&nbsp;интерфейс&nbsp;машины.<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>p<font color="#339933">&gt;</font>Состояние&nbsp;машины<font color="#339933">:</font>&nbsp;<font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">machineState</font><font color="#009900">&#125;</font>.&nbsp;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>br<font color="#339933">/&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>button&nbsp;onClick<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">clickButtonHandler</font><font color="#009900">&#125;</font><font color="#339933">&gt;</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">buttonLabel</font><font color="#009900">&#125;</font><font color="#339933">&lt;/</font>button<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>p<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Машину&nbsp;запускали&nbsp;<font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">machineStartCount</font><font color="#009900">&#125;</font>&nbsp;раз.<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+  &nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+  &nbsp;<br/>
+  &nbsp;<br/>
+  &nbsp;</blockquote>
+
+Обратим внимание на строку после <code>div</code>. Теперь мы имеем на странице два независимых однотипных компонента с разными состояниями. Смотрим на рисунок.
+</p>
+<img src='./images/two_machines.png' style='border: solid 1px;' />
+<p>
+Это самый простой случай использования пропса. В игре "Сапер" рассмотрим еще.
+Промежуточный итог таков: 
+  <ul>
+    <li> мы научились создавать простое приложение React;</li>
+    <li> мы научились создавать компоненты React;</li>
+    <li> мы научились взаимодействовать с компонентами </li>
+    <li> узнали что такое <code>state</code> и <code>props</code></li>
+  </ul>
+</p>
+<p>
+На очереди -- создание игры "Сапер". Рассмотрим создание более сложных компонетов, посмотрим как можно устроить взаимодействие между компонентами. Для реализации логики игры сначала поработаем с состояниями компонентов, во второй итерации посмотрим как хранить состояние всего приложения и работать с ним с использованием redux. Приступим.
+</p>
+
+<h2>Игра "Сапер"</h2>
+<p>
+Все знают игру "Сапер", нужно на поле размера <code>M x N</code>  найти <code>X</code> мин. Сделаем такую.
+Интерфейс игры показан на рисунке.
+</p>
+<!--
+<img src='./images/fig_8.png' width='500px' height='700px'/>
+-->
+<img src='./images/fig_8.png' />
+<p>
+Здесь есть два "больших" компонента:
+<ul>
+  <li>компонент с "измерительными приборами" (счетчик мин и секундомер) <code>ControlPanel</code></li>
+  <li>компонент "игровое поле" с множеством кликабельных компонентов, квадратов с минами или без<code>MineField</code></li>
+</ul>
+</p>
+
+<p>
+Оговорим правила, может быть еще раз.
+<ul>
+  <li>перед игроком поле <code>m</code>-строк, <code>n</code>-колонок</li>
+  <li>игрок кликает по любой ячейке левой кнопкой мыши
+    <ul>
+      <li>если это первый клик за игру, то запускается секундомер</li>
+      <li>если ячейка пустая и рядом в соседних ячеках нет мин, то ячейка открывается, открываются все соседние ячейки, и если у открывающейся ячейки есть соседи с минами, то их количество появляется на ячейке. 
+        Ячейки открываются автоматически последовательно, пока не откроются все соседние пустые ячейки без минных соседей 
+      </li>
+      <li>если у открытой ячейки есть соседи с минами, то она просто покажет их кол-во</li>
+      <li>если игрок кликнет по ячейке с миной, таймер останавливается, показываются все мины (их места расположения), игра окончена</li>
+    </ul>
+    <li>игрок кликает по закрытой ячейке правой кнопкой мыши - ячейка помечается как заминированная, повторный клик снимает метку, при этом увеличивается или уменьшается счетчик мин</li>
+    <li>если откроются все свободные ячейки - секундомер останавливается, игра окончена</li>
+</ul>
+</p>
+
+<h3>Родительский компонент <code>Game</code> </h3>
+<p>
+Про этот компоннент я не упоминал, но он является главным, родительским компонентом для минного поля и панели отображения. Что входит в функции данного компонента:
+<ul>
+  <li>конечно создание тех двух</li>
+  <li>запуск счетчика секунд после первого клика пользователя по ячейке</li>
+  <li>остановка его после "нахождения" мины (проигрыш) или после открытия всех свободных от мин ячеек (выигрыш)</li>
+  <li>оповещение пользователя о звершении игры</li>
+</ul>
+
+Game хранит свое состояние вот в таком объекте:
+<!--
+  state = {
+    flagCnt: 0,
+    seconds: 0,
+  };
+-->
+
+<blockquote>&nbsp;&nbsp;state&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;flagCnt<font color="#339933">:</font>&nbsp;<font color="#CC0000">0</font><font color="#339933">,</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;seconds<font color="#339933">:</font>&nbsp;<font color="#CC0000">0</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><font color="#339933">;</font><br/>
+&nbsp;</blockquote>
+
+Здесь: <code>flagCnt</code> -- счетчик флажков на минном поле, <code>seconds</code> -- прошло секунд с начала игры.
+</p>
+<p>
+Но ведь счетчик флажков и прошедших секунд отображается на кмпоненте <code>ControlPnael</code> , как же происходит передача данных? Посмотрим.
+<h3>Компонент <code>ControlPnael</code> </h3>
+Вот так <code>Game</code> создает <code>ControlPanel</code>
+<!--
+ <ControlPanel
+    flagCnt={this.state.flagCnt}
+    seconds={this.state.seconds}
+ />
+-->
+<blockquote><font color="#339933">&lt;</font>ControlPanel<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;flagCnt<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">flagCnt</font><font color="#009900">&#125;</font><br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;seconds<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">seconds</font><font color="#009900">&#125;</font><br/>
+  &nbsp;<font color="#339933">/&gt;</font><br/>
+  &nbsp;</blockquote>
+А вот так будет выглядеть код компонента <code>ControlPanel</code>.
+<!--
+const zeroPad = (num, places) => String(num).padStart(places, '0');
+    
+const controlPanel = (props) => {
+  const min = Math.floor(props.seconds / 60);
+  const secs = props.seconds % 60;
+
+  return (
+    <div className='Control'
+    style={{color: '#adadad'}}
+    >
+    Flag count:{zeroPad(props.flagCnt)}  Time:{zeroPad(min, 2)}:{zeroPad(secs, 2)}
+    </div>
+  );
+}
+
+export default controlPanel;
+-->
+Он совсем короткий и я привожу его весь. 
+<blockquote><font color="#000066">const</font>&nbsp;zeroPad&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font>num<font color="#339933">,</font>&nbsp;places<font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font>String</font><font color="#009900">&#40;</font>num<font color="#009900">&#41;</font>.<font color="#660066">padStart</font><font color="#009900">&#40;</font>places<font color="#339933">,</font>&nbsp;<font color="#3366CC">'0'</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;<br/>
+<font color="#000066">const</font>&nbsp;controlPanel&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font>props<font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;min&nbsp;<font color="#339933">=</font>&nbsp;<font>Math</font>.<font color="#660066">floor</font><font color="#009900">&#40;</font>props.<font color="#660066">seconds</font>&nbsp;<font color="#339933">/</font>&nbsp;<font color="#CC0000">60</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;secs&nbsp;<font color="#339933">=</font>&nbsp;props.<font color="#660066">seconds</font>&nbsp;<font color="#339933">%</font>&nbsp;<font color="#CC0000">60</font><font color="#339933">;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div&nbsp;className<font color="#339933">=</font><font color="#3366CC">'Control'</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;style<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#009900">&#123;</font>color<font color="#339933">:</font>&nbsp;<font color="#3366CC">'#adadad'</font><font color="#009900">&#125;</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Flag&nbsp;count<font color="#339933">:</font><font color="#009900">&#123;</font>zeroPad<font color="#009900">&#40;</font>props.<font color="#660066">flagCnt</font><font color="#009900">&#41;</font><font color="#009900">&#125;</font>&nbsp;&nbsp;Time<font color="#339933">:</font><font color="#009900">&#123;</font>zeroPad<font color="#009900">&#40;</font>min<font color="#339933">,</font>&nbsp;<font color="#CC0000">2</font><font color="#009900">&#41;</font><font color="#009900">&#125;</font><font color="#339933">:</font><font color="#009900">&#123;</font>zeroPad<font color="#009900">&#40;</font>secs<font color="#339933">,</font>&nbsp;<font color="#CC0000">2</font><font color="#009900">&#41;</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+<font color="#FF0000">export</font>&nbsp;<font color="#000066">default</font>&nbsp;controlPanel<font color="#339933">;</font><br/>
+&nbsp;<br/>
+&nbsp;</blockquote>
+
+Функциональный компонент создается с параметром <code>props</code>, <code>Game</code> в пропсах указывет имена переменных (своих переменных) <code>this.state.flagCnt</code> и <code>this.state.seconds</code>, а <code>ControlPanel</code> использует при рендеринге имена пропсов <code>flagCnt</code> и <code>seconds</code>. Просто?
+Сам компонент не изменяет значания пропсов, за него это делает родительский компонент, причем делает это с использованием <code>setState()</code> (помним, что эта функция используется для изменения <code>state</code> компонента). А так как <code>setState</code> инициирует перересовку самого компонента и его дочек, то мы увидим изменяющиеся значения на <code>ControlPanel</code>.
+</p>
+<p>
+Как данные спускаются от родительского компонента в дочерний мы увидели, теперь посмотрим как данные "поднимаются" от дочернего компонента к родительскому. Такой фокус происходит при взаимодействии <code>Game</code>  и <code>MineField</code> . 
+
+<h3>Взаимодействие <code>Game &lt--&gt MineField</code> </h3>
+При создании компонента <code>MineField</code> импользуется следующий код в <code>Game</code> :
+<!--
+	<MineField
+		rows='8'
+		cols='8'
+		mines='10'
+		gameStarted={this.startGame}
+		gameOver={this.stopGame}
+		changeFlagCount={this.setFlag}
+	/>
+-->
+<blockquote>&nbsp;&nbsp;<font color="#339933">&lt;</font>MineField<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;rows<font color="#339933">=</font><font color="#3366CC">'8'</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;cols<font color="#339933">=</font><font color="#3366CC">'8'</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;mines<font color="#339933">=</font><font color="#3366CC">'10'</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;gameStarted<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">startGame</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;gameOver<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">stopGame</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;changeFlagCount<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">setFlag</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;<font color="#339933">/&gt;</font><br/>
+&nbsp;</blockquote>
+
+Имена пропсов, наверное, говорящие: <code>rows</code> -- колчество строк ячеек, <code>cols</code> -- количество колонок, <code>mines</code> -- количество мин, с этими значения <code>MineField</code> построит минное поле. Теперь о передаче данных "наверх". Как <code>Game</code> узнАет о том, что игра началась, что был уже клик по ячейке? Просто, <code>MineField</code> вызовет в своем коде функцию <code>gameSarted</code> -- это имя пропса, но выполнится код функции <code>startGame</code> в пространстве класса <code>Game</code> -- это его функция.
+Это приведет по цепочке к ежесекундному запуску функции <code>tick()</code>, изменяющей значение <code>seconds</code>, до тех пор пока <code>MineField</code> не вызовет функцию <code>gameOver(true|false)</code>, при этом вызовется функция <code>stopGame</code> в классе <code>Game</code>. <code>Game</code> покажет <code>alert</code> с сообщением о выигрыше или проигрыше в зависимости от переданного (поднятого?)из <code>MineField</code> параметра. Вот часть кода <code>Game</code> (собственно, почти весь код):
+<!--
+  start = () => {
+    this.timerID = setInterval(() => this.tick(), 1000);
+  }
+
+  stop = () => {
+    clearInterval(this.timerID)
+  }
+
+  tick() {
+    const oldsec = this.state.seconds;
+    this.setState({seconds: oldsec + 1});
+  }
+
+  startGame = () => {
+    this.start();
+  }
+
+  stopGame = (isGameWon) => {
+    if (isGameWon) {
+      alert("You win");
+    } else {
+      alert("You lose");
+    }
+    this.stop();
+  }
+
+-->
+
+<blockquote>&nbsp;&nbsp;start&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">timerID</font>&nbsp;<font color="#339933">=</font>&nbsp;setInterval<font color="#009900">&#40;</font><font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">tick</font><font color="#009900">&#40;</font><font color="#009900">&#41;</font><font color="#339933">,</font>&nbsp;<font color="#CC0000">1000</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;stop&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;clearInterval<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">timerID</font><font color="#009900">&#41;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;tick<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;oldsec&nbsp;<font color="#339933">=</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">seconds</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">setState</font><font color="#009900">&#40;</font><font color="#009900">&#123;</font>seconds<font color="#339933">:</font>&nbsp;oldsec&nbsp;<font color="#339933">+</font>&nbsp;<font color="#CC0000">1</font><font color="#009900">&#125;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;startGame&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">start</font><font color="#009900">&#40;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;stopGame&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font>isGameWon<font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">if</font>&nbsp;<font color="#009900">&#40;</font>isGameWon<font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert<font color="#009900">&#40;</font><font color="#3366CC">&quot;You&nbsp;win&quot;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font>&nbsp;<font color="#000066">else</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert<font color="#009900">&#40;</font><font color="#3366CC">&quot;You&nbsp;lose&quot;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">stop</font><font color="#009900">&#40;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;</blockquote>
+</p>
+
+<h3>Создание ячеек поля и их с полем взаимодействие</h3>
+<p>
+Функционал ячеек прост и описывается он в классе с оригинальным названием <code>Cell</code>. Первое и основное, что должна сделать ячейка -- это отрисовать себя в соответствии со своим состоянием: закрыта, открыта, помечена флагом. Тут нужно добавить, что состояние чейки не явлется хранимым в ячейке состоянием, а опять же передается ей через пропс от <code>MineField</code>. 
+</p>
+<!--
+  render () {
+    const cellSize = 40; //px
+    var width = cellSize + 'px';
+    var height = cellSize + 'px';
+    var left = this.props.col * (cellSize + 4) + 'px';
+    var top = this.props.row * (cellSize + 4) + 'px';
+    let backgroundColor = this.props.opened ? '#adadad' : '#501b1d';
+
+    var rendstate = () => {
+        if (this.props.checked) {
+          return (
+            <img className='flag' src={flag} alt=''/>
+          )
+        }
+        if (this.props.opened) {
+          return (
+            this.props.hasBomb ? <img className='bomb' src={bomb} alt=''/> : (this.props.bombNbr > 0 ? this.props.bombNbr : ''));
+        }
+    }
+
+    return (
+      <div className='Cell'
+        style={{width, height, left, top, backgroundColor}}
+        onClick={this.leftClickHandler}
+        onContextMenu={this.rightClickHandler}
+      >
+        {rendstate()}
+      </div>
+    );
+  }
+
+-->
+<blockquote>&nbsp;render&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">const</font>&nbsp;cellSize&nbsp;<font color="#339933">=</font>&nbsp;<font color="#CC0000">40</font><font color="#339933">;</font>&nbsp;<font color="#006600">//px</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">var</font>&nbsp;width&nbsp;<font color="#339933">=</font>&nbsp;cellSize&nbsp;<font color="#339933">+</font>&nbsp;<font color="#3366CC">'px'</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">var</font>&nbsp;height&nbsp;<font color="#339933">=</font>&nbsp;cellSize&nbsp;<font color="#339933">+</font>&nbsp;<font color="#3366CC">'px'</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">var</font>&nbsp;left&nbsp;<font color="#339933">=</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">col</font>&nbsp;<font color="#339933">*</font>&nbsp;<font color="#009900">&#40;</font>cellSize&nbsp;<font color="#339933">+</font>&nbsp;<font color="#CC0000">4</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">+</font>&nbsp;<font color="#3366CC">'px'</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">var</font>&nbsp;top&nbsp;<font color="#339933">=</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">row</font>&nbsp;<font color="#339933">*</font>&nbsp;<font color="#009900">&#40;</font>cellSize&nbsp;<font color="#339933">+</font>&nbsp;<font color="#CC0000">4</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">+</font>&nbsp;<font color="#3366CC">'px'</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;backgroundColor&nbsp;<font color="#339933">=</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">opened</font>&nbsp;<font color="#339933">?</font>&nbsp;<font color="#3366CC">'#adadad'</font>&nbsp;<font color="#339933">:</font>&nbsp;<font color="#3366CC">'#501b1d'</font><font color="#339933">;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">var</font>&nbsp;rendstate&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">if</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">checked</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>img&nbsp;className<font color="#339933">=</font><font color="#3366CC">'flag'</font>&nbsp;src<font color="#339933">=</font><font color="#009900">&#123;</font>flag<font color="#009900">&#125;</font>&nbsp;alt<font color="#339933">=</font><font color="#3366CC">''</font><font color="#339933">/&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">if</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">opened</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">hasBomb</font>&nbsp;<font color="#339933">?</font>&nbsp;<font color="#339933">&lt;</font>img&nbsp;className<font color="#339933">=</font><font color="#3366CC">'bomb'</font>&nbsp;src<font color="#339933">=</font><font color="#009900">&#123;</font>bomb<font color="#009900">&#125;</font>&nbsp;alt<font color="#339933">=</font><font color="#3366CC">''</font><font color="#339933">/&gt;</font>&nbsp;<font color="#339933">:</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">bombNbr</font>&nbsp;<font color="#339933">&gt;</font>&nbsp;<font color="#CC0000">0</font>&nbsp;<font color="#339933">?</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">bombNbr</font>&nbsp;<font color="#339933">:</font>&nbsp;<font color="#3366CC">''</font><font color="#009900">&#41;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div&nbsp;className<font color="#339933">=</font><font color="#3366CC">'Cell'</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;style<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#009900">&#123;</font>width<font color="#339933">,</font>&nbsp;height<font color="#339933">,</font>&nbsp;left<font color="#339933">,</font>&nbsp;top<font color="#339933">,</font>&nbsp;backgroundColor<font color="#009900">&#125;</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onClick<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">leftClickHandler</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onContextMenu<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">rightClickHandler</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#123;</font>rendstate<font color="#009900">&#40;</font><font color="#009900">&#41;</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;</blockquote>
+<p>
+Да, в этой функции много "магических" чисел (40, 4, 4), наверное код можно было бы сделать чище. Но по именам переменных наверное все понятно:
+<code>cellSize</code> -- длина стороны ячейки, чтобы хоть как-то уменьшить количество безымянных чисел.
+<code>width, height</code> -- высота ширина
+<code>top, left</code> -- координаты верхнего левого угла ячеки на поле, вычисляются в зависимости от номера строки и колонки, передаваемых от <code>MineField</code> в пропсах.
+<code>bomb, flag</code> -- импортированные из файлов рисунки.
+Итого, чтобы ячейка себя правильно отрисовала <code>MineField</code> передает ей следующие пропсы:
+<ul>
+<li>
+  <code>col</code> -- колонка
+</li>
+<li>
+  <code>row</code> -- строка
+</li>
+<li>
+  <code>checked</code> -- помечена флагом
+</li>
+<li>
+  <code>opened</code> -- открыта
+</li>
+<li>
+  <code>bombNbr</code> -- сколько мин (бомб) в соседних ячейках  
+</li>
+</ul>
+</p>
+
+<p>
+И конечно, нужно реагировать на нажатия левой и правой кнопки мыши. За это отвечают следующие две функции, обратите внимание, они указаны в тэге <code>div</code> : 
+<!--
+  leftClickHandler = () => {
+    this.props.clickLeft(this.props.row, this.props.col);
+  }
+
+  rightClickHandler = (e) => {
+    e.preventDefault();
+    this.props.clickRight(this.props.row, this.props.col);
+  }
+
+-->
+<blockquote>&nbsp;&nbsp;leftClickHandler&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">clickLeft</font><font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">row</font><font color="#339933">,</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">col</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;rightClickHandler&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font>e<font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;e.<font color="#660066">preventDefault</font><font color="#009900">&#40;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">clickRight</font><font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">row</font><font color="#339933">,</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">col</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;</blockquote>
+Как видите, вся работа этих функций заключается только в том, чтобы передать "наверх" координаты ячейки, про которой кликнули. После клика, вызываются переданные в пропсах функции, работа которых произойдет в классе <code>MineField </code> и после обработки результат спустится вниз, назад в ячейку в виде измененного пропса <code>opened</code>  или <code>checked</code> .
+</p>
+
+<h2>Класс MineField</h2>
+<p>
+Это самый "функционально насыщенный и сложный" класс, весь код составляет немногим более 200 строк. Класс имеет конструктор, в котором создается массив размера <code>rows x cols</code> содержащий элементы типа <code>cellData</code> . Вот описание <code>cellData</code> .
+<!--
+class cellData {
+  constructor (row, col) {
+    this.row = row;
+    this.col = col;
+    this.hasBomb = false;
+    this.checked = false;
+    this.opened = false;
+    this.bombNbr = 0;
+    this.nbrs = [...Array(0)];
+  }
+}
+
+-->
+<blockquote><font color="#FF0000">class</font>&nbsp;cellData&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;constructor&nbsp;<font color="#009900">&#40;</font>row<font color="#339933">,</font>&nbsp;col<font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">row</font>&nbsp;<font color="#339933">=</font>&nbsp;row<font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">col</font>&nbsp;<font color="#339933">=</font>&nbsp;col<font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">hasBomb</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#003366">false</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">checked</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#003366">false</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">opened</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#003366">false</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">bombNbr</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#CC0000">0</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">nbrs</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#91;</font>...<font>Array</font><font color="#009900">&#40;</font><font color="#CC0000">0</font><font color="#009900">&#41;</font><font color="#009900">&#93;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+<font color="#009900">&#125;</font><br/>
+&nbsp;</blockquote>
+</p>
+<p>
+Эти данные полностью описываю состояние ячейки минного поля и именно они передаются в качестве пропсов при создании ячейки. Я про них уже писал.
+
+<!--
+  constructor(props) {
+    super(props);
+    this.closedCells = props.rows * props.cols - props.mines;
+    this.flagCount = 0;
+    this.state = {
+      field: this.createMap(this.props.rows, this.props.cols, this.props.mines),
+      gameState: 'waiting',
+    }
+  }
+-->
+<blockquote>&nbsp;constructor<font color="#009900">&#40;</font>props<font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000">super</font><font color="#009900">&#40;</font>props<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">closedCells</font>&nbsp;<font color="#339933">=</font>&nbsp;props.<font color="#660066">rows</font>&nbsp;<font color="#339933">*</font>&nbsp;props.<font color="#660066">cols</font>&nbsp;<font color="#339933">-</font>&nbsp;props.<font color="#660066">mines</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">flagCount</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#CC0000">0</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">state</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;field<font color="#339933">:</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">createMap</font><font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">rows</font><font color="#339933">,</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">cols</font><font color="#339933">,</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">mines</font><font color="#009900">&#41;</font><font color="#339933">,</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gameState<font color="#339933">:</font>&nbsp;<font color="#3366CC">'waiting'</font><font color="#339933">,</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;</blockquote>
+
+В поле состояния <code>state.field</code>  мы сохраняем карту минного поля, создаваемого функцией <code>createMap(this.props.rows, this.props.cols, this.props.mines)</code> . Если посмотреть на код (сслыка на полный код игры в конце статьи) создания минного поля, то можно увидеть может быть не совсем оптимальное наполнение поля минами и расчет соседей с минами и заполнение списка соседей, в общем, несколько проходов по одному и тому же массиву, но читается легко (наверное).
+Что же, вот и код отрисовки компонента <code>MineField</code>  и создания при этом компонетов ячеек с нужными пропсами, считаем при этом что все данные для ячеек лежат в соответствующем массиве:
+<!--
+ render() {
+    return (
+      <div className='MineField'>
+      {
+        this.state.field.map(function(row){
+          return row.map(function (cell) {
+            return (
+              <Cell
+              row={cell.row}
+                col={cell.col}
+                hasBomb={cell.hasBomb}
+                bombNbr={cell.bombNbr}
+                key={cell.row + "-" + cell.col}
+                checked={cell.checked}
+                opened={cell.opened}
+                clickLeft={this.cellLeftClicked}
+                clickRight={this.cellRightClicked}
+              />
+            )
+          }, this);
+        }, this)
+      }
+      </div>
+    );
+  }
+-->
+<blockquote>&nbsp;render<font color="#009900">&#40;</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>div&nbsp;className<font color="#339933">=</font><font color="#3366CC">'MineField'</font><font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">field</font>.<font color="#660066">map</font><font color="#009900">&#40;</font><font color="#000066">function</font><font color="#009900">&#40;</font>row<font color="#009900">&#41;</font><font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;row.<font color="#660066">map</font><font color="#009900">&#40;</font><font color="#000066">function</font>&nbsp;<font color="#009900">&#40;</font>cell<font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">return</font>&nbsp;<font color="#009900">&#40;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;</font>Cell<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;row<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">row</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;col<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">col</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hasBomb<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">hasBomb</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bombNbr<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">bombNbr</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">row</font>&nbsp;<font color="#339933">+</font>&nbsp;<font color="#3366CC">&quot;-&quot;</font>&nbsp;<font color="#339933">+</font>&nbsp;cell.<font color="#660066">col</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;checked<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">checked</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;opened<font color="#339933">=</font><font color="#009900">&#123;</font>cell.<font color="#660066">opened</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clickLeft<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">cellLeftClicked</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clickRight<font color="#339933">=</font><font color="#009900">&#123;</font><font color="#000066">this</font>.<font color="#660066">cellRightClicked</font><font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">/&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><font color="#339933">,</font>&nbsp;<font color="#000066">this</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><font color="#339933">,</font>&nbsp;<font color="#000066">this</font><font color="#009900">&#41;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#339933">&lt;/</font>div<font color="#339933">&gt;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font></blockquote>
+В конструкции <code>map</code>  не забываем передать указатель на класс, иначе будут недоступны функции класса. Все, игровое поле создано и готово принимать клики мышкой.
+При клике на ячейку, как мы помним, в конечном итоге вызывается функция из класса <code>MineField</code> , производит манипуляции с минным полем, тем самым массивом, потом обновляем состояние (<code>setState())</code> , и наблюдаем изменение внешнего вида ячеек, пропсы ведь поменялись, а так же смотрим на запуск счетчика секунд и флажков. Вот не очень сложный код функций обработки кликов
+<!--
+  cellLeftClicked = (row, col) => {
+    switch (this.state.gameState) {
+      case 'waiting':
+        this.props.gameStarted();
+        this.setState({gameState: 'started'});
+        /* falls through */
+      case 'started':
+        let newField = [...this.state.field];
+        this.openCell(newField, row, col);
+        this.setState({field: newField});
+        break;
+      case 'finished':
+        break;
+      default:
+        break;
+    }
+  }
+
+  cellRightClicked = (row, col) => {
+    switch (this.state.gameState) {
+      case 'waiting':
+        break;
+      case 'started':
+        if (this.state.field[row][col].opened) {
+          break;
+        }
+        let newField = [...this.state.field];
+        let flagCntDiff = newField[row][col].checked ? -1 : 1;
+        if ((this.flagCount + flagCntDiff) < 0 || (this.flagCount + flagCntDiff) > this.props.mines) {
+          break;
+        }
+        this.flagCount += flagCntDiff;
+        this.props.changeFlagCount(flagCntDiff);
+        newField[row][col].checked = !newField[row][col].checked;
+        this.setState({field: newField});
+        break;
+      case 'finished':
+        break;
+      default:
+        break;
+    }
+  }
+
+
+
+-->
+<blockquote>&nbsp;&nbsp;cellLeftClicked&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font>row<font color="#339933">,</font>&nbsp;col<font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">switch</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">gameState</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'waiting'</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">gameStarted</font><font color="#009900">&#40;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">setState</font><font color="#009900">&#40;</font><font color="#009900">&#123;</font>gameState<font color="#339933">:</font>&nbsp;<font color="#3366CC">'started'</font><font color="#009900">&#125;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#006600">/*&nbsp;falls&nbsp;through&nbsp;*/</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'started'</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;newField&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#91;</font>...<font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">field</font><font color="#009900">&#93;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">openCell</font><font color="#009900">&#40;</font>newField<font color="#339933">,</font>&nbsp;row<font color="#339933">,</font>&nbsp;col<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">setState</font><font color="#009900">&#40;</font><font color="#009900">&#123;</font>field<font color="#339933">:</font>&nbsp;newField<font color="#009900">&#125;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'finished'</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">default</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;cellRightClicked&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#40;</font>row<font color="#339933">,</font>&nbsp;col<font color="#009900">&#41;</font>&nbsp;<font color="#339933">=&gt;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">switch</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">gameState</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'waiting'</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'started'</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">if</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">field</font><font color="#009900">&#91;</font>row<font color="#009900">&#93;</font><font color="#009900">&#91;</font>col<font color="#009900">&#93;</font>.<font color="#660066">opened</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;newField&nbsp;<font color="#339933">=</font>&nbsp;<font color="#009900">&#91;</font>...<font color="#000066">this</font>.<font color="#660066">state</font>.<font color="#660066">field</font><font color="#009900">&#93;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;flagCntDiff&nbsp;<font color="#339933">=</font>&nbsp;newField<font color="#009900">&#91;</font>row<font color="#009900">&#93;</font><font color="#009900">&#91;</font>col<font color="#009900">&#93;</font>.<font color="#660066">checked</font>&nbsp;<font color="#339933">?</font>&nbsp;<font color="#339933">-</font><font color="#CC0000">1</font>&nbsp;<font color="#339933">:</font>&nbsp;<font color="#CC0000">1</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">if</font>&nbsp;<font color="#009900">&#40;</font><font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">flagCount</font>&nbsp;<font color="#339933">+</font>&nbsp;flagCntDiff<font color="#009900">&#41;</font>&nbsp;<font color="#339933">&lt;</font>&nbsp;<font color="#CC0000">0</font>&nbsp;<font color="#339933">||</font>&nbsp;<font color="#009900">&#40;</font><font color="#000066">this</font>.<font color="#660066">flagCount</font>&nbsp;<font color="#339933">+</font>&nbsp;flagCntDiff<font color="#009900">&#41;</font>&nbsp;<font color="#339933">&gt;</font>&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">mines</font><font color="#009900">&#41;</font>&nbsp;<font color="#009900">&#123;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">flagCount</font>&nbsp;<font color="#339933">+=</font>&nbsp;flagCntDiff<font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">props</font>.<font color="#660066">changeFlagCount</font><font color="#009900">&#40;</font>flagCntDiff<font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newField<font color="#009900">&#91;</font>row<font color="#009900">&#93;</font><font color="#009900">&#91;</font>col<font color="#009900">&#93;</font>.<font color="#660066">checked</font>&nbsp;<font color="#339933">=</font>&nbsp;<font color="#339933">!</font>newField<font color="#009900">&#91;</font>row<font color="#009900">&#93;</font><font color="#009900">&#91;</font>col<font color="#009900">&#93;</font>.<font color="#660066">checked</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">this</font>.<font color="#660066">setState</font><font color="#009900">&#40;</font><font color="#009900">&#123;</font>field<font color="#339933">:</font>&nbsp;newField<font color="#009900">&#125;</font><font color="#009900">&#41;</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">case</font>&nbsp;<font color="#3366CC">'finished'</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">default</font><font color="#339933">:</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000066">break</font><font color="#339933">;</font><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;&nbsp;<font color="#009900">&#125;</font><br/>
+&nbsp;</blockquote>
+
+Как видно, игра перемещается из состояния в состояние <code>waiting -&gt started -&gt finished</code> . <code>waiting </code> -- это состояние сразу после загрузки страницы. В состояние <code>started </code> мы перемещаемся после открытия первой ячейки, и в состояние <code>finished</code>  после открытия ячейки с миной или открытия всех свободных ячеек. За открытие ячеек отвечает фунцкия <code>openCell()</code> , она рекурсивно вызывает себя для открытия соседних ячеек, которые не граничат заминированными ячейками. В состоянии <code>finished</code> мы перестаем реагировать на действия пользователя, игру (страницу) нужно перезагрузить.
+</p>
+<p>
+Еще раз хотелось бы обратить внимание на то, как происходит работа с минным полем -- <code>state.field</code> . В обработчике клика мышкой мы сосздаем копию поля.
+Производим с ним необоходимые манипуляции и потом, с помощью <code>setState()</code>  устанавливаем новое состояние с новым, обновленным полем.
+</p>
+<h2>Вот и все</h2>
+<p>
+Полный код приложения можно найти по ссылке (ее пока нет).
+</p>
+<p>
+В этой статье я хотел показать способы взаимодействия, обмена данными  между компонентами в приложении React, надеюсь получилось. Хотя могло получиться и так, что какие-то вещи уже очевидные для себя сейчас не рассказал. Я также писал здесь в тексте, что расскажу на примере этой же игры про применение <code>redux</code> , но наверное она (игра) того не стоит. Если статья вызовет интерес, сделаем какую нибудь инфографику с биржи, поучимся вместе использовать графические библиотеки и вот тут дойдет время для <code>redux</code> , будет к месту, наверное. А теперь, всем всего хорошего!
+</p>
+
+
+
+
+
+
+
+  </body>
+</html>

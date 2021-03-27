@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+.MineField {
+  display: block;
+  padding: 10px;
+  position: relative;
+  width: 331px;
+  height: 331px;
+  border: solid 2px #83677b;
+  border-radius: 5px;
+  background-color: #64485c;
+}
+
+.Cell {
+  display: block;
+  position: absolute;
+  background-color: antiquewhite;
+  border-radius: 5px;
+  border: solid 2px #83677b;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.Control {
+  position: relative;
+  margin: left;
+  display: block;
+  padding: 10px;
+  width: 331px;
+  height: 20px;
+  border-radius: 5px;
+  border: solid 2px #83677b;
+  background-color: #2e1114;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.Game {
+  position: relative;
+  padding: 20px;
+  margin: auto;
+  background-color: #64485c;
+}
+
+.flag {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 35px;
+  height: 35px;
+}
+
+.bomb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 35px;
+  height: 35px;
+}
+
